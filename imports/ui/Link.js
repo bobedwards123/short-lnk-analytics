@@ -11,7 +11,6 @@ export default () => {
     <div>
       <PrivateHeader title="Your Links"/>
       <div className="page-content">
-        <Analytics />
         <LinksListFilters/>
         <AddLink/>
         <LinksList/>
