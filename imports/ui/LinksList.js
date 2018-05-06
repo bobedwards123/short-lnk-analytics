@@ -4,6 +4,7 @@ import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import rd3 from 'react-d3';
 var Treemap = rd3.Treemap;
+var PieChart = rd3.PieChart;
 import FlipMove from 'react-flip-move';
 import Analytics from './Analytics';
 
@@ -21,7 +22,9 @@ export default class LinksList extends React.Component {
       treemapData: [
       
       ],
-      treeData: []
+      treeData: [],
+      pieChart: [],
+      totalVisits: 0
     };
   }
   componentDidMount() {
@@ -32,9 +35,22 @@ export default class LinksList extends React.Component {
         visible: Session.get('showVisible')
       }).fetch();
       this.setState({treemapData: []})
+
+      let totalVisits = 0;
+      for(let i = 0; i < links.length; i++){
+        totalVisits += links[i].visitedCount
+      } 
+      this.setState({totalVisits})
+      console.log(this.state.totalVisits)
+
       links.map((link)=>{
-        this.state.treemapData.push({label: link._id, value: link.visitedCount})
+        this.state.treemapData.push({label: link._id, value: parseInt((link.visitedCount / this.state.totalVisits) * 100)})
+        
       })
+      
+      
+
+      
       this.setState({ links });
 
       var linkData = this.state.links;
@@ -68,6 +84,7 @@ export default class LinksList extends React.Component {
     console.log(this.state.treemapData)
 
     return (
+      <div>
       <div className="item">
         <Treemap
           data={this.state.treemapData}
@@ -77,6 +94,19 @@ export default class LinksList extends React.Component {
           fontSize="10px"
           title="Links"
         />
+      </div>
+      <div className="item">
+      <PieChart
+        data={this.state.treemapData}
+        width={400}
+        height={400}
+        radius={100}
+        innerRadius={20}
+        title="Pie Chart"
+      />
+    
+   
+      </div>
       </div>
     )
   }
